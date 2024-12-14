@@ -4,6 +4,7 @@ import LoadingSpinner from "../../components/common/LoadingSpinner";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa6";
+import Layout from "../../components/common/Layout";
 
 const NotificationPage = () => {
 	const isLoading = false;
@@ -33,7 +34,7 @@ const NotificationPage = () => {
 	};
 
 	return (
-		<>
+		<Layout>
 			<div className='flex-[4_4_0] border-l border-r border-gray-700 min-h-screen'>
 				<div className='flex justify-between items-center p-4 border-b border-gray-700'>
 					<p className='font-bold'>Notifications</p>
@@ -77,7 +78,7 @@ const NotificationPage = () => {
 					</div>
 				))}
 			</div>
-		</>
+		</Layout>
 	);
 };
 export default NotificationPage;

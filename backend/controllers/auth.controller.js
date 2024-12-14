@@ -17,7 +17,6 @@ const loginBody = z.object({
 
 export const signup = async (req, res) => {
   try {
-    console.log(req.body);
     const { success } = signUpBody.safeParse(req.body);
     if (!success) return res.status(400).json({ error: "Invalid inputs" });
 
