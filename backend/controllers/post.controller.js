@@ -178,7 +178,7 @@ export const getLikedPosts = async (req, res) => {
         path: "comments.user",
         select: "-password",
       });
-    return res.status(200).json({ likedPosts });
+    return res.status(200).json({ posts: likedPosts });
   } catch (err) {
     console.log(err, "Error in getLikedPosts controller");
     res.status(500).json({ error: "Internal server error!" });
@@ -202,7 +202,7 @@ export const getFollowingPosts = async (req, res) => {
         path: "comments.user",
         select: "-password",
       });
-    return res.status(200).json({ followingPosts });
+    return res.status(200).json({ posts: followingPosts });
   } catch (err) {
     console.log(err, "Error in getFollowingPosts controller");
     res.status(500).json({ error: "Internal server error!" });
@@ -227,7 +227,7 @@ export const getUserPosts = async (req, res) => {
         path: "comments.user",
         select: "-password",
       });
-    return res.status(200).json({ followingPosts });
+    return res.status(200).json({ posts: followingPosts });
   } catch (err) {
     console.log(err, "Error in getFollowingPosts controller");
     res.status(500).json({ error: "Internal server error!" });
