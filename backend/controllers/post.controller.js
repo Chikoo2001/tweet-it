@@ -4,18 +4,10 @@ import { v2 } from "cloudinary";
 import Notification from "../models/notification.model.js";
 import User from "../models/user.model.js";
 
-const postBody = z.object({
-  text: z.string(),
-  img: z.instanceof(File).optional(),
-});
-
 export const createPost = async (req, res) => {
   try {
-    const isValid = postBody.safeParse(req.body);
-    if (!isValid?.success)
-      return res.status(400).json({ error: isValid.error.errors[0]?.message });
-
     const { text, img } = req.body;
+    if(!text) return res.status(400).json({error: "Text field is required!"})
     const userId = req.userId;
 
     const newPost = new Post({
