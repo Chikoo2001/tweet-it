@@ -93,7 +93,7 @@ export const getSuggestedUsers = async (req, res) => {
     const users = await User.find({
       _id: { $ne: userId, $nin: followedUsers }, // Exclude the current user and followed users
     }).limit(4);
-    res.status(200).json(users);
+    res.status(200).json({users});
   } catch (err) {
     console.log(err, "Error in getSuggestedUsers controller");
     res.status(500).json({ error: "Internal server error!" });
