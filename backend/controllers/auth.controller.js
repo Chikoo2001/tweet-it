@@ -110,7 +110,6 @@ export const getMe = async (req, res) => {
   try {
     const userId = req.userId;
     const user = await User.findOne({ _id: userId });
-    console.log(user)
     if (user) {
       res.status(201).json({
         _id: user._id,

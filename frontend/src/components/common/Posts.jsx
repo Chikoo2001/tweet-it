@@ -33,7 +33,7 @@ const Posts = ({ feedType }) => {
         console.log(data);
         return data?.posts || [];
       } catch (error) {
-        throw new Error(error);
+        throw new Error(error.message);
       }
     },
     retry: false,

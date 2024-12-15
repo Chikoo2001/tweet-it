@@ -91,9 +91,9 @@ export const getSuggestedUsers = async (req, res) => {
     const userId = req.userId;
     const followedUsers = await User.findById(userId).select("following");
     const users = await User.find({
-      _id: { $ne: userId, $nin: followedUsers }, // Exclude the current user and followed users
+      _id: { $ne: userId, $nin: followedUsers.following }, // Exclude the current user and followed users
     }).limit(4);
-    res.status(200).json({users});
+    res.status(200).json({ users });
   } catch (err) {
     console.log(err, "Error in getSuggestedUsers controller");
     res.status(500).json({ error: "Internal server error!" });
@@ -103,7 +103,6 @@ export const getSuggestedUsers = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const isValid = updateUserBodySchema.safeParse(req.body);
-    console.log(isValid)
     if (!isValid?.success)
       return res.status(400).json({ error: isValid.error.errors[0]?.message });
     const {
@@ -157,8 +156,7 @@ export const updateUser = async (req, res) => {
     user = await user.save();
     delete user.password;
 
-    return res.status(200).json({user})
-
+    return res.status(200).json({ user });
   } catch (err) {
     console.log(err, "Error in updateUser controller");
     res.status(500).json({ error: "Internal server error!" });
