@@ -7,7 +7,8 @@ import User from "../models/user.model.js";
 export const createPost = async (req, res) => {
   try {
     const { text, img } = req.body;
-    if(!text) return res.status(400).json({error: "Text field is required!"})
+    if (!text)
+      return res.status(400).json({ error: "Text field is required!" });
     const userId = req.userId;
 
     const newPost = new Post({
@@ -111,7 +112,9 @@ export const likeOrUnlikePost = async (req, res) => {
         ),
       ];
       await user.save();
-      res.status(200).json({ msg: "Post unliked successfully" });
+      res
+        .status(200)
+        .json({ msg: "Post unliked successfully", updatedLikes: post.likes });
     } else {
       post.likes.push(userId);
       const notification = new Notification({
@@ -123,7 +126,9 @@ export const likeOrUnlikePost = async (req, res) => {
       await post.save();
       user.likedPosts.push(post._id);
       await user.save();
-      res.status(200).json({ msg: "Post liked successfully" });
+      res
+        .status(200)
+        .json({ msg: "Post liked successfully", updatedLikes: post.likes });
     }
   } catch (err) {
     console.log(err, "Error in likeOrUnlike controller");
