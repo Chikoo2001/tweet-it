@@ -56,38 +56,48 @@ export const commentOnPost = async (req, res) => {
     const { text } = req.body;
     if (!text)
       return res.status(400).json({ error: "Comment can't be empty!" });
+
     const { id } = req.params;
     if (!id) return res.status(400).json({ error: "Invalid inputs!" });
+
     const post = await Post.findById(id);
     if (!post) return res.status(404).json({ error: "Post not found!" });
+
     const userId = req.userId;
 
-    post.comments = [
-      ...post.comments,
-      {
-        user: userId,
-        text,
-      },
-    ];
-
+    // Add the comment to the post
+    post.comments.push({ user: userId, text });
     await post.save();
 
-    const notification = new Notification({
-      from: userId,
-      to: post.user,
-      type: "comment",
+    // Create notification
+    try {
+      const notification = new Notification({
+        from: userId,
+        to: post.user,
+        type: "comment",
+      });
+      await notification.save();
+    } catch (err) {
+      console.error("Error saving notification:", err);
+    }
+
+    // Add post ID to user's commentedPosts
+    const user = await User.findById(userId).select("-password");
+    if (user) {
+      user.commentedPosts.push(post._id);
+      await user.save();
+    }
+
+    // Populate the post for the response
+    await post.populate({ path: "user", select: "-password" });
+    await post.populate({ path: "comments.user", select: "-password" });
+
+    return res.status(201).json({
+      msg: "Comment successful!",
+      comments: post.comments,
     });
-    await notification.save();
-    await post.save();
-
-    const user = await User.findById(userId);
-
-    user.commentedPosts = [...user.commentedPosts, post._id];
-    await user.save();
-
-    return res.status(201).json({ msg: "Comment successfull!" });
   } catch (err) {
-    console.log(err, "Error in delete post controller");
+    console.error(err, "Error in commentOnPost controller");
     res.status(500).json({ error: "Internal server error" });
   }
 };
