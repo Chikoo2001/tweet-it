@@ -7,7 +7,7 @@ import userRoutes from "./routes/user.routes.js";
 import postRoutes from "./routes/post.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 
-import connectMongoDB from "./db/connectMongoDb.js";
+import connectMongoDB from "./db/connectMongoDB.js";
 import cookieParser from "cookie-parser";
 import { v2 } from "cloudinary";
 
