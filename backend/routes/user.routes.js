@@ -4,7 +4,7 @@ import { protectRoute } from "../middlewares/protectRoute.js";
 
 const router = Router();
 
-router.get("/profile/:username", protectRoute, getUserProfile);
+router.get("/profile/:userId", protectRoute, getUserProfile);
 router.post('/follow/:id', protectRoute, followOrUnfollowUser);
 router.get('/suggestedUsers', protectRoute, getSuggestedUsers);
 router.post('/update', protectRoute, updateUser);

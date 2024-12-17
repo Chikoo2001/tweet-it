@@ -38,7 +38,7 @@ export default function App() {
         <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to="/" />} />
         <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/" />} />
         <Route path="/notifications" element={authUser ? <NotificationPage /> : <Navigate to="/login" />}  />
-        <Route path="/profile/:username" element={authUser ? <ProfilePage /> : <Navigate to="/login" />}  />
+        <Route path="/profile/:id" element={authUser ? <ProfilePage /> : <Navigate to="/login" />}  />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       {/* <RightPanel /> */}

@@ -42,7 +42,7 @@ const RightPanel = () => {
           {!isLoading &&
             suggestedUsers?.map((user) => (
               <Link
-                to={`/profile/${user.username}`}
+                to={`/profile/${user._id}`}
                 className="flex items-center justify-between gap-4"
                 key={user._id}
               >

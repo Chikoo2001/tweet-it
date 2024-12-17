@@ -97,7 +97,7 @@ const NotificationPage = () => {
               {notification.type === "comment" && (
                 <FaComment className="w-7 h-7 text-blue-500" />
               )}
-              <Link to={`/profile/${notification.from.username}`}>
+              <Link to={`/profile/${notification.from._id}`}>
                 <div className="avatar">
                   <div className="w-8 rounded-full">
                     <img

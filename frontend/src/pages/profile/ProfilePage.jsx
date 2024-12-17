@@ -5,20 +5,23 @@ import Posts from "../../components/common/Posts";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "./EditProfileModal";
 
-import { POSTS } from "../../utils/db/dummy";
-
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import Layout from "../../components/common/Layout";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { formatMemberSinceDate } from "../../utils/date";
+import useFollow from "../../hooks/useFollow";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
+import toast from "react-hot-toast";
+import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
 
 const ProfilePage = () => {
-  const { username } = useParams();
+  const { id: userId } = useParams();
 
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+  const { data: posts } = useQuery({ queryKey: ["posts"] });
 
   const [coverImg, setCoverImg] = useState(null);
   const [profileImg, setProfileImg] = useState(null);
@@ -36,7 +39,7 @@ const ProfilePage = () => {
     queryKey: ["user"],
     queryFn: async () => {
       try {
-        const res = await fetch(`/api/user/profile/${username}`);
+        const res = await fetch(`/api/user/profile/${userId}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Something went wrong");
         return data;
@@ -48,7 +51,12 @@ const ProfilePage = () => {
     retry: false,
   });
 
+  const { updateProfile, isUpdating } = useUpdateUserProfile();
+
+  const { followOrUnfollow, isLoading: isPending } = useFollow();
+
   const isMyProfile = user?._id == authUser._id;
+  const isFollowing = authUser.following.includes(user?._id);
 
   const handleImgChange = (e, state) => {
     const file = e.target.files[0];
@@ -64,7 +72,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     refetch();
-  }, [username, refetch]);
+  }, [userId, refetch]);
 
   return (
     <Layout>
@@ -84,7 +92,7 @@ const ProfilePage = () => {
                 <div className="flex flex-col">
                   <p className="font-bold text-lg">{user?.fullName}</p>
                   <span className="text-sm text-slate-500">
-                    {POSTS?.length} posts
+                    {posts?.length || 0} posts
                   </span>
                 </div>
               </div>
@@ -144,17 +152,27 @@ const ProfilePage = () => {
                 {!isMyProfile && (
                   <button
                     className="btn btn-outline rounded-full btn-sm"
-                    onClick={() => alert("Followed successfully")}
+                    onClick={() => {
+                      if (isPending) return;
+                      followOrUnfollow(user._id);
+                    }}
                   >
-                    Follow
+                    {isPending && <LoadingSpinner size="sm" />}
+                    {!isPending && (isFollowing ? "Unfollow" : "Follow")}
                   </button>
                 )}
                 {(coverImg || profileImg) && (
                   <button
                     className="btn btn-primary rounded-full btn-sm text-white px-4 ml-2"
-                    onClick={() => alert("Profile updated successfully")}
+                    onClick={() => {
+                      if (isUpdating) return;
+                      const body = {};
+                      if (profileImg) body.profileImg = profileImg;
+                      if (coverImg) body.coverImg = coverImg;
+                      updateProfile(body);
+                    }}
                   >
-                    Update
+                    {isUpdating ? <LoadingSpinner size="sm" /> : "Update"}
                   </button>
                 )}
               </div>
@@ -174,12 +192,12 @@ const ProfilePage = () => {
                       <>
                         <FaLink className="w-3 h-3 text-slate-500" />
                         <a
-                          href="https://youtube.com/@asaprogrammer_"
+                          href={user.link}
                           target="_blank"
                           rel="noreferrer"
                           className="text-sm text-blue-500 hover:underline"
                         >
-                          youtube.com/@asaprogrammer_
+                          {user.link}
                         </a>
                       </>
                     </div>

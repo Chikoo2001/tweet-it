@@ -39,11 +39,11 @@ const updateUserBodySchema = z
 
 export const getUserProfile = async (req, res) => {
   try {
-    const { username } = req.params;
-    if (!username) {
+    const { userId } = req.params;
+    if (!userId) {
       return res.status(400).json({ error: "Invalid inputs!" });
     }
-    const user = await User.findOne({ username }).select("-password");
+    const user = await User.findById(userId).select("-password");
     if (user) {
       res.status(200).json(user);
     } else {
@@ -114,14 +114,18 @@ export const updateUser = async (req, res) => {
       bio,
       link,
     } = req.body;
-    const { profileImg, coverImg } = req.body;
+    let { profileImg, coverImg } = req.body;
     const userId = req.userId;
     let user = await User.findById(userId);
     if (!user) return res.status(400).json({ error: "User not found" });
+    if (newPassword && !currentPassword)
+      return res
+        .status(403)
+        .json({ error: "Please enter the current password" });
     if (currentPassword && newPassword) {
       const isMatch = await bcrypt.compare(currentPassword, user.password);
       if (!isMatch)
-        return res.json(400).json({ error: "Current password is incorrect" });
+        return res.status(400).json({ error: "Current password is incorrect" });
 
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(newPassword, salt);
@@ -156,7 +160,7 @@ export const updateUser = async (req, res) => {
     user = await user.save();
     delete user.password;
 
-    return res.status(200).json({ user });
+    return res.status(200).json(user);
   } catch (err) {
     console.log(err, "Error in updateUser controller");
     res.status(500).json({ error: "Internal server error!" });

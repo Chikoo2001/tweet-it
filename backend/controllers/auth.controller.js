@@ -120,6 +120,7 @@ export const getMe = async (req, res) => {
         following: user.following,
         profileImg: user.profileImg,
         coverImg: user.coverImg,
+        bio: user.bio,
       });
     } else {
       res.status(403).json({ error: "User not found!" });
