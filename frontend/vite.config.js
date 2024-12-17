@@ -8,10 +8,24 @@ export default defineConfig({
     port: 3000,
     proxy: {
       "/api": {
-        target: 'http://localhost:5000',
+        target: "http://localhost:5000",
         changeOrigin: true,
-        logLevel: 'debug',
-      }
-    }
+        logLevel: "debug",
+      },
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("daisyui") || id.includes("tailwindcss")) {
+              return "tailwind"; // Put Tailwind and DaisyUI in a single chunk
+            }
+            return "vendor"; // All other node_modules go into 'vendor'
+          }
+        },
+      },
+    },
   },
 });
