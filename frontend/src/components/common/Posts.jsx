@@ -4,13 +4,17 @@ import { POSTS } from "../../utils/db/dummy";
 import { useQuery } from "react-query";
 import { useEffect } from "react";
 
-const Posts = ({ feedType }) => {
+const Posts = ({ feedType, userId }) => {
   const getPostEndPoint = () => {
     switch (feedType) {
       case "feed":
         return "/api/posts/";
       case "following":
         return "/api/posts/following";
+      case "posts":
+        return "/api/posts/user/" + userId;
+      case "likes":
+        return "/api/posts/liked/" + userId;
       default:
         return "/api/posts/";
     }
@@ -41,7 +45,7 @@ const Posts = ({ feedType }) => {
 
   useEffect(() => {
     refetch();
-  }, [feedType, refetch]);
+  }, [feedType, refetch, userId]);
 
   return (
     <>
